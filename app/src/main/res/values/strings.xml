@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Fine</string>
+
+    <string name="tab_add">Ajouter</string>
+    <string name="tab_history">Historique</string>
+    <string name="tab_manage">Gestion</string>
+
+    <string name="title_add">Enregistrer une nouvelle depense</string>
+    <string name="add_intro_title">Pret a enregistrer une depense ?</string>
+    <string name="add_intro_description">Appuie sur Commencer, dis ce que tu as paye, quand et combien. L\'app se charge du reste.</string>
+    <string name="action_start">Commencer</string>
+    <string name="add_step_what_title">Quoi ? Decris la depense.</string>
+    <string name="add_step_when_title">Quand ? Indique la date.</string>
+    <string name="add_step_howmuch_title">Combien ? Donne le montant.</string>
+    <string name="add_placeholder_what">Quoi</string>
+    <string name="add_placeholder_when">Quand</string>
+    <string name="add_placeholder_howmuch">Combien</string>
+    <string name="action_cancel">Annuler</string>
+    <string name="action_repeat">Repeter</string>
+    <string name="action_continue">Continuer</string>
+    <string name="action_finish">Terminer</string>
+    <string name="action_start_recording">Commencer l\'enregistrement</string>
+    <string name="action_stop_recording">Arreter l\'enregistrement</string>
+    <string name="add_message_saved">Depense enregistree.</string>
+    <string name="add_permission_required">Autorise le micro pour enregistrer la depense.</string>
+    <string name="add_error_speech_unavailable">La reconnaissance vocale n\'est pas disponible sur cet appareil.</string>
+    <string name="add_error_no_match">Aucune voix reconnue. Reessaie.</string>
+    <string name="add_error_audio">Erreur micro. Verifie ton appareil.</string>
+    <string name="add_error_speech_generic">Erreur de dictee. Reessaie.</string>
+
+    <string name="history_empty">Aucune depense enregistree.</string>
+    <string name="history_month_header">%1$s - Total : %2$s</string>
+
+    <string name="manage_title">Gestion</string>
+    <string name="manage_export_description">Exporte toutes les depenses en CSV (date;description;montant).</string>
+    <string name="manage_export_button">Exporter en CSV</string>
+    <string name="manage_export_in_progress">Export en cours...</string>
+    <string name="manage_purge_description">Supprime tout l\'historique local.</string>
+    <string name="manage_purge_button">Purger l\'historique</string>
+    <string name="manage_purge_in_progress">Purge en cours...</string>
+    <string name="manage_about_title">A propos</string>
+    <string name="manage_about_description">Application personnelle, donnees stockees uniquement sur l\'appareil.</string>
+    <string name="manage_purge_confirm_title">Confirmer la purge</string>
+    <string name="manage_purge_confirm_body">Supprimer toutes les depenses enregistrees ? Cette action est definitive.</string>
+    <string name="manage_purge_confirm_yes">Oui, purger</string>
+    <string name="manage_purge_confirm_no">Annuler</string>
+</resources>

@@ -1,0 +1,34 @@
+### IDE artifacts
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+### Build system output
+.gradle/
+**/build/
+**/.cxx/
+**/.externalNativeBuild/
+captures/
+
+### Local configuration
+local.properties
+**/local.properties
+
+### OS generated files
+.DS_Store
+Thumbs.db
+
+### Android packaging
+*.apk
+*.ap_
+*.aar
+*.aab
+*.keystore
+*.jks
+
+### Logs & temp
+*.log
+*.hprof
+out/
