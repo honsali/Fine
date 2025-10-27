@@ -1,29 +1,34 @@
 package app.fine.ui.add
 
+import androidx.annotation.StringRes
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Mic
-import androidx.compose.material.icons.filled.MicOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -44,28 +49,46 @@ fun AddScreen(
     onTextChanged: (CaptureStep, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 24.dp, vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+    Surface(
+        modifier = modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
-        Text(
-            text = stringResource(R.string.title_add),
-            style = MaterialTheme.typography.headlineMedium
-        )
+        Column(modifier = Modifier.fillMaxSize()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.tertiary)
+                    .padding(horizontal = 24.dp, vertical = 24.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.title_add),
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onTertiary
+                )
+            }
 
-        when (state.step) {
-            CaptureStep.Initial -> InitialStep(onStart)
-            else -> ActiveStep(
-                state = state,
-                onCancel = onCancel,
-                onRepeat = onRepeat,
-                onContinue = onContinue,
-                onFinish = onFinish,
-                onMicToggle = onMicToggle,
-                onTextChanged = onTextChanged
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
+                    .padding(horizontal = 24.dp, vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(24.dp)
+            ) {
+                when (state.step) {
+                    CaptureStep.Initial -> InitialStep(onStart)
+                    else -> ActiveStep(
+                        state = state,
+                        onCancel = onCancel,
+                        onRepeat = onRepeat,
+                        onContinue = onContinue,
+                        onFinish = onFinish,
+                        onMicToggle = onMicToggle,
+                        onTextChanged = onTextChanged
+                    )
+                }
+            }
         }
     }
 }
@@ -75,7 +98,7 @@ private fun InitialStep(onStart: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f)
         )
     ) {
         Column(
@@ -86,14 +109,22 @@ private fun InitialStep(onStart: () -> Unit) {
             Text(
                 text = stringResource(R.string.add_intro_title),
                 style = MaterialTheme.typography.titleLarge,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = stringResource(R.string.add_intro_description),
                 style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Button(onClick = onStart) {
+            Button(
+                onClick = onStart,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
                 Text(text = stringResource(R.string.action_start))
             }
         }
@@ -143,7 +174,7 @@ private fun ActiveStep(
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f)
         )
     ) {
         Column(
@@ -152,12 +183,20 @@ private fun ActiveStep(
         ) {
             Text(
                 text = headline,
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface
             )
+
+            val recordingStatus = when {
+                state.isRecording -> R.string.add_recording_active
+                textValue.isNotBlank() -> R.string.add_recording_finished
+                else -> R.string.add_recording_none
+            }
 
             MicToggleButton(
                 isRecording = state.isRecording,
                 enabled = !state.isSaving,
+                statusLabel = recordingStatus,
                 onToggle = onMicToggle
             )
 
@@ -185,13 +224,23 @@ private fun ActiveStep(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    TextButton(onClick = onCancel) {
+                    OutlinedButton(
+                        onClick = onCancel,
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.primary
+                        ),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                    ) {
                         Text(text = stringResource(R.string.action_cancel))
                     }
-                    val canRepeat = textValue.isNotBlank()
-                    OutlinedButton(
+                    val canRepeat = textValue.isNotBlank() || !state.isRecording
+                    Button(
                         onClick = onRepeat,
-                        enabled = canRepeat
+                        enabled = canRepeat,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.secondary,
+                            contentColor = MaterialTheme.colorScheme.onSecondary
+                        )
                     ) {
                         Text(text = stringResource(R.string.action_repeat))
                     }
@@ -200,14 +249,22 @@ private fun ActiveStep(
                 if (state.step == CaptureStep.HowMuch) {
                     Button(
                         onClick = onFinish,
-                        enabled = !state.isSaving && textValue.isNotBlank()
+                        enabled = !state.isSaving && textValue.isNotBlank(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        )
                     ) {
                         Text(text = stringResource(R.string.action_finish))
                     }
                 } else {
                     Button(
                         onClick = onContinue,
-                        enabled = textValue.isNotBlank()
+                        enabled = textValue.isNotBlank(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        )
                     ) {
                         Text(text = stringResource(R.string.action_continue))
                     }
@@ -221,15 +278,11 @@ private fun ActiveStep(
 private fun MicToggleButton(
     isRecording: Boolean,
     enabled: Boolean,
+    @StringRes statusLabel: Int,
     onToggle: (Boolean) -> Unit
 ) {
-    val labelId = if (isRecording) {
-        R.string.action_stop_recording
-    } else {
-        R.string.action_start_recording
-    }
     val background = if (isRecording) {
-        MaterialTheme.colorScheme.primaryContainer
+        MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f)
     } else {
         MaterialTheme.colorScheme.surface
     }
@@ -248,23 +301,27 @@ private fun MicToggleButton(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = stringResource(labelId),
-                style = MaterialTheme.typography.bodyLarge
+                text = stringResource(statusLabel),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface
             )
             IconButton(
                 onClick = { onToggle(!isRecording) },
                 enabled = enabled
             ) {
-                val icon = if (isRecording) {
-                    Icons.Filled.MicOff
+                if (isRecording) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = MaterialTheme.colorScheme.primary,
+                        strokeWidth = 2.dp
+                    )
                 } else {
-                    Icons.Filled.Mic
+                    Icon(
+                        imageVector = Icons.Filled.Mic,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
                 }
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = if (isRecording) MaterialTheme.colorScheme.primary else Color.Unspecified
-                )
             }
         }
     }

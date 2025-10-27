@@ -1,6 +1,8 @@
 package app.fine.ui.history
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,7 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -45,34 +47,55 @@ fun HistoryScreen(
         DateTimeFormatter.ofPattern("LLLL yyyy", Locale("fr", "FR"))
     }
 
-    if (state.months.isEmpty()) {
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(24.dp),
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = stringResource(R.string.history_empty),
-                style = MaterialTheme.typography.titleMedium,
-                textAlign = TextAlign.Center
-            )
-        }
-        return
-    }
-
-    LazyColumn(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+    Surface(
+        modifier = modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
-        items(state.months) { month ->
-            MonthlyHistoryCard(
-                month = month,
-                dateFormatter = dateFormatter,
-                monthFormatter = monthFormatter
-            )
+        Column(modifier = Modifier.fillMaxSize()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.tertiary)
+                    .padding(horizontal = 24.dp, vertical = 24.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.history_title),
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onTertiary
+                )
+            }
+
+            if (state.months.isEmpty()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(24.dp),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.history_empty),
+                        style = MaterialTheme.typography.titleMedium,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(state.months) { month ->
+                        MonthlyHistoryCard(
+                            month = month,
+                            dateFormatter = dateFormatter,
+                            monthFormatter = monthFormatter
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -87,7 +110,7 @@ private fun MonthlyHistoryCard(
     Card(
         modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f)
         )
     ) {
         Column(
@@ -105,7 +128,7 @@ private fun MonthlyHistoryCard(
                 fontWeight = FontWeight.SemiBold
             )
 
-            Divider()
+            HorizontalDivider()
 
             month.expenses.forEach { expense ->
                 ExpenseRow(

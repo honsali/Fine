@@ -7,8 +7,10 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -18,7 +20,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -68,10 +72,15 @@ fun FineApp(
 
         Scaffold(
             snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+            containerColor = MaterialTheme.colorScheme.tertiary,
+            contentColor = MaterialTheme.colorScheme.onTertiary,
             bottomBar = {
                 val currentDestination by navController.currentBackStackEntryAsState()
                 val destination = currentDestination?.destination
-                NavigationBar {
+                NavigationBar(
+                    containerColor = MaterialTheme.colorScheme.tertiary,
+                    tonalElevation = 0.dp
+                ) {
                     destinations.forEach { item ->
                         val selected = destination.isRouteSelected(item.route)
                         NavigationBarItem(
@@ -86,7 +95,14 @@ fun FineApp(
                                 }
                             },
                             label = { Text(text = stringResource(id = item.labelRes)) },
-                            icon = { Icon(imageVector = item.icon, contentDescription = null) }
+                            icon = { Icon(imageVector = item.icon, contentDescription = null) },
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = MaterialTheme.colorScheme.onTertiary,
+                                selectedTextColor = MaterialTheme.colorScheme.onTertiary,
+                                unselectedIconColor = Color.Gray,
+                                unselectedTextColor = Color.Gray,
+                                indicatorColor = Color.Transparent
+                            )
                         )
                     }
                 }

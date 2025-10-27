@@ -1,5 +1,12 @@
 <resources>
     <style name="Theme.Fine" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="colorPrimary">@color/fiery_primary</item>
+        <item name="colorPrimaryVariant">@color/fiery_burgundy</item>
+        <item name="colorSecondary">@color/ocean_soft</item>
+        <item name="colorSecondaryVariant">@color/ocean_deep</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="android:statusBarColor">@color/ocean_deep</item>
+        <item name="android:navigationBarColor">@color/ocean_deep</item>
     </style>
 </resources>

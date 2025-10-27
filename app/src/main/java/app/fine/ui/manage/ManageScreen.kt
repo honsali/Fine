@@ -1,12 +1,16 @@
 package app.fine.ui.manage
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -34,88 +38,116 @@ fun ManageScreen(
     onDismissDialog: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+    Surface(
+        modifier = modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
-        Text(
-            text = stringResource(R.string.manage_title),
-            style = MaterialTheme.typography.headlineSmall
-        )
-
-        ElevatedCard {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.manage_export_description),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Button(
-                    onClick = onExport,
-                    enabled = !state.isExporting
-                ) {
-                    Text(
-                        text = if (state.isExporting) {
-                            stringResource(R.string.manage_export_in_progress)
-                        } else {
-                            stringResource(R.string.manage_export_button)
-                        }
-                    )
-                }
-            }
-        }
-
-        ElevatedCard {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.manage_purge_description),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                OutlinedButton(
-                    onClick = onPurgeRequest,
-                    enabled = !state.isPurging
-                ) {
-                    Text(
-                        text = if (state.isPurging) {
-                            stringResource(R.string.manage_purge_in_progress)
-                        } else {
-                            stringResource(R.string.manage_purge_button)
-                        }
-                    )
-                }
-            }
-        }
-
-        Card(
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant
-            )
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            Column(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                    .background(MaterialTheme.colorScheme.tertiary)
+                    .padding(horizontal = 24.dp, vertical = 24.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.manage_about_title),
-                    style = MaterialTheme.typography.titleMedium
+                    text = stringResource(R.string.manage_title),
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onTertiary
                 )
-                Text(
-                    text = stringResource(R.string.manage_about_description),
-                    style = MaterialTheme.typography.bodyMedium
-                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp, vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(24.dp)
+            ) {
+                ElevatedCard {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.manage_export_description),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Button(
+                            onClick = onExport,
+                            enabled = !state.isExporting,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            )
+                        ) {
+                            Text(
+                                text = if (state.isExporting) {
+                                    stringResource(R.string.manage_export_in_progress)
+                                } else {
+                                    stringResource(R.string.manage_export_button)
+                                }
+                            )
+                        }
+                    }
+                }
+
+                ElevatedCard {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.manage_purge_description),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        OutlinedButton(
+                            onClick = onPurgeRequest,
+                            enabled = !state.isPurging,
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                contentColor = MaterialTheme.colorScheme.primary
+                            ),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                        ) {
+                            Text(
+                                text = if (state.isPurging) {
+                                    stringResource(R.string.manage_purge_in_progress)
+                                } else {
+                                    stringResource(R.string.manage_purge_button)
+                                }
+                            )
+                        }
+                    }
+                }
+
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f)
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.manage_about_title),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            text = stringResource(R.string.manage_about_description),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
             }
         }
     }
