@@ -1,4 +1,4 @@
-package app.fine.parser
+﻿package app.fine.parser
 
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -7,7 +7,7 @@ import java.util.Locale
 
 object AmountParser {
 
-    private val locale: Locale = Locale("fr", "FR")
+    private val locale: Locale = Locale.forLanguageTag("fr-FR")
     private val currencyRegex = Regex("\\b(dh?s?|dirhams?)\\b", RegexOption.IGNORE_CASE)
     private val allowedCharacters = Regex("[^\\d.,\\s]")
     private val whitespaceRegex = Regex("\\s+")

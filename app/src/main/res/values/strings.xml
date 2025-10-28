@@ -37,6 +37,12 @@
     <string name="history_title">Historique</string>
     <string name="history_empty">Aucune depense enregistree.</string>
     <string name="history_month_header">%1$s - Total : %2$s</string>
+    <string name="history_edit_title">Modifier la depense</string>
+    <string name="history_edit_description">Description</string>
+    <string name="history_edit_date">Date</string>
+    <string name="history_edit_amount">Montant</string>
+    <string name="history_edit_cancel">Annuler</string>
+    <string name="history_edit_confirm">Valider</string>
 
     <string name="manage_title">Gestion</string>
     <string name="manage_export_description">Exporte toutes les depenses en CSV (date;description;montant).</string>

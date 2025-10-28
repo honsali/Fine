@@ -16,6 +16,15 @@ interface ExpenseRepository {
         source: String = "voice"
     ): Result<Long>
 
+    suspend fun updateExpense(
+        id: Long,
+        description: String,
+        date: LocalDate,
+        amountMinor: Long
+    ): Result<Unit>
+
+    suspend fun deleteExpense(id: Long): Result<Unit>
+
     suspend fun purgeAll()
     suspend fun exportCsv(outputStream: OutputStream): Result<Unit>
 }

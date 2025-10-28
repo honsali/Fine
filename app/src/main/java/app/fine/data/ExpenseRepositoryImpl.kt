@@ -65,6 +65,33 @@ class ExpenseRepositoryImpl(
         }
     }
 
+    override suspend fun updateExpense(
+        id: Long,
+        description: String,
+        date: LocalDate,
+        amountMinor: Long
+    ): Result<Unit> = runCatching {
+        require(description.isNotBlank()) { "Description manquante." }
+        require(description.length <= 500) { "Description trop longue." }
+        require(amountMinor > 0) { "Montant invalide." }
+        withContext(ioDispatcher) {
+            val existing = dao.getById(id) ?: error("Depense introuvable.")
+            dao.update(
+                existing.copy(
+                    description = description,
+                    date = DATE_FORMATTER.format(date),
+                    amountMinor = amountMinor
+                )
+            )
+        }
+    }
+
+    override suspend fun deleteExpense(id: Long): Result<Unit> = runCatching {
+        withContext(ioDispatcher) {
+            dao.delete(id)
+        }
+    }
+
     override suspend fun purgeAll() {
         withContext(ioDispatcher) {
             dao.deleteAll()

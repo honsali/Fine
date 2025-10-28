@@ -1,4 +1,4 @@
-package app.fine.ui
+﻿package app.fine.ui
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
@@ -132,7 +132,14 @@ fun FineApp(
                 composable(Routes.History) { backStackEntry ->
                     val historyViewModel: app.fine.ui.history.HistoryViewModel =
                         viewModel(backStackEntry, factory = factory)
-                    HistoryRoute(viewModel = historyViewModel)
+                    HistoryRoute(
+                        viewModel = historyViewModel,
+                        onMessage = { message ->
+                            scope.launch {
+                                snackbarHostState.showSnackbar(message)
+                            }
+                        }
+                    )
                 }
                 composable(Routes.Manage) { backStackEntry ->
                     val manageViewModel: app.fine.ui.manage.ManageViewModel =

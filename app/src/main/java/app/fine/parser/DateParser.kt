@@ -13,7 +13,7 @@ import java.util.Locale
 
 object DateParser {
 
-    private val locale = Locale("fr", "FR")
+    private val locale: Locale = Locale.forLanguageTag("fr-FR")
     private val zoneId: ZoneId = ZoneId.of("Africa/Casablanca")
     private val whitespaceRegex = Regex("\\s+")
     private val accentRegex = Regex("\\p{Mn}+")

@@ -5,7 +5,8 @@ import java.text.DecimalFormatSymbols
 import java.util.Locale
 
 object MoneyFormatter {
-    private val symbols = DecimalFormatSymbols(Locale("fr", "FR")).apply {
+    private val locale: Locale = Locale.forLanguageTag("fr-FR")
+    private val symbols = DecimalFormatSymbols(locale).apply {
         decimalSeparator = ','
         groupingSeparator = ' '
     }
@@ -14,5 +15,10 @@ object MoneyFormatter {
     fun format(amountMinor: Long): String {
         val major = amountMinor / 100.0
         return "${decimalFormat.format(major)} MAD"
+    }
+
+    fun formatPlain(amountMinor: Long): String {
+        val major = amountMinor / 100.0
+        return decimalFormat.format(major)
     }
 }
