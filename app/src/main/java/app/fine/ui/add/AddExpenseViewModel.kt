@@ -31,7 +31,7 @@ class AddExpenseViewModel(
     }
 
     fun cancel() {
-        _uiState.value = AddExpenseUiState()
+        _uiState.update { AddExpenseUiState() }
     }
 
     fun repeatStep() {
@@ -183,6 +183,7 @@ class AddExpenseViewModel(
 }
 
 private object LocalDateProvider {
-    private val zone = ZoneId.of("Africa/Casablanca")
+    private const val ZONE_ID = "Africa/Casablanca"
+    private val zone = ZoneId.of(ZONE_ID)
     fun now() = java.time.LocalDate.now(zone)
 }

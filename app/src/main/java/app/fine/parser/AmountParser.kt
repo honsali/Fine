@@ -22,20 +22,53 @@ object AmountParser {
             error("Montant non reconnu.")
         }
 
-        val decimalNormalized = when {
-            trimmed.count { it == ',' } > 1 -> error("Montant non reconnu.")
-            trimmed.count { it == '.' } > 1 -> error("Montant non reconnu.")
-            trimmed.contains(',') && trimmed.contains('.') -> {
-                // Assume comma is decimal separator when mixed.
-                trimmed.replace(".", "").replace(',', '.')
-            }
-            trimmed.contains(',') -> trimmed.replace(',', '.')
-            else -> trimmed
-        }
+        val decimalNormalized = normalizeSeparators(trimmed)
 
         val decimal = BigDecimal(decimalNormalized)
             .setScale(2, RoundingMode.HALF_UP)
 
         decimal.movePointRight(2).longValueExact()
+    }
+
+    private fun normalizeSeparators(raw: String): String {
+        val digitsOnly = raw.filter { it.isDigit() || it == '.' || it == ',' }
+        val lastComma = digitsOnly.lastIndexOf(',')
+        val lastDot = digitsOnly.lastIndexOf('.')
+
+        val decimalSeparator: Char? = when {
+            lastComma == -1 && lastDot == -1 -> null
+            lastComma == -1 -> '.'
+            lastDot == -1 -> ','
+            lastComma > lastDot -> ','
+            else -> '.'
+        }
+
+        val groupingSeparator: Char? = when (decimalSeparator) {
+            null -> {
+                if (digitsOnly.contains('.') && digitsOnly.contains(',')) {
+                    error("Montant non reconnu.")
+                } else null
+            }
+            ',' -> if (digitsOnly.contains('.')) '.' else null
+            '.' -> if (digitsOnly.contains(',')) ',' else null
+            else -> null
+        }
+
+        if (decimalSeparator != null && digitsOnly.count { it == decimalSeparator } > 1) {
+            error("Montant non reconnu.")
+        }
+
+        val withoutGrouping = groupingSeparator?.let { digitsOnly.replace(it.toString(), "") } ?: digitsOnly
+        val normalized = if (decimalSeparator != null) {
+            withoutGrouping.replace(decimalSeparator, '.')
+        } else {
+            withoutGrouping
+        }
+
+        if (normalized.count { it == '.' } > 1) {
+            error("Montant non reconnu.")
+        }
+
+        return normalized
     }
 }

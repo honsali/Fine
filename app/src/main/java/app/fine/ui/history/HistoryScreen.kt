@@ -40,12 +40,8 @@ fun HistoryScreen(
     state: HistoryUiState,
     modifier: Modifier = Modifier
 ) {
-    val dateFormatter = remember {
-        DateTimeFormatter.ofPattern("dd/MM/yyyy")
-    }
-    val monthFormatter = remember {
-        DateTimeFormatter.ofPattern("LLLL yyyy", Locale("fr", "FR"))
-    }
+    val dateFormatter = DATE_FORMATTER
+    val monthFormatter = MONTH_FORMATTER
 
     Surface(
         modifier = modifier.fillMaxSize(),
@@ -87,7 +83,7 @@ fun HistoryScreen(
                         .padding(horizontal = 16.dp, vertical = 12.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    items(state.months) { month ->
+                    items(state.months, key = { it.yearMonth.toString() }) { month ->
                         MonthlyHistoryCard(
                             month = month,
                             dateFormatter = dateFormatter,
@@ -141,9 +137,9 @@ private fun MonthlyHistoryCard(
 }
 
 @Composable
-private fun ExpenseRow(
-    expense: Expense,
-    dateFormatter: DateTimeFormatter
+    private fun ExpenseRow(
+        expense: Expense,
+        dateFormatter: DateTimeFormatter
 ) {
     Row(
         modifier = Modifier
@@ -190,3 +186,7 @@ private fun HistoryScreenPreview() {
         )
     }
 }
+
+private val DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+private val MONTH_FORMATTER: DateTimeFormatter =
+    DateTimeFormatter.ofPattern("LLLL yyyy", Locale("fr", "FR"))

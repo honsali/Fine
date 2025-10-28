@@ -1,4 +1,4 @@
-package app.fine.ui.add
+﻿package app.fine.ui.add
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
@@ -27,13 +27,20 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalAccessibilityManager
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import app.fine.R
 import app.fine.ui.theme.FineTheme
 
@@ -49,6 +56,8 @@ fun AddScreen(
     onTextChanged: (CaptureStep, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val view = LocalView.current
+
     Surface(
         modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -76,6 +85,15 @@ fun AddScreen(
                     .padding(horizontal = 24.dp, vertical = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
+                val stepAnnouncement = when (state.step) {
+                    CaptureStep.Initial -> stringResource(R.string.add_intro_title)
+                    CaptureStep.What -> stringResource(R.string.add_step_what_title)
+                    CaptureStep.When -> stringResource(R.string.add_step_when_title)
+                    CaptureStep.HowMuch -> stringResource(R.string.add_step_howmuch_title)
+                }
+                LaunchedEffect(stepAnnouncement, view) {
+                    view.announceForAccessibility(stepAnnouncement)
+                }
                 when (state.step) {
                     CaptureStep.Initial -> InitialStep(onStart)
                     else -> ActiveStep(
@@ -305,9 +323,16 @@ private fun MicToggleButton(
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurface
             )
+            val toggleDescription = stringResource(
+                if (isRecording) R.string.add_recording_toggle_stop_desc else R.string.add_recording_toggle_start_desc
+            )
             IconButton(
                 onClick = { onToggle(!isRecording) },
-                enabled = enabled
+                enabled = enabled,
+                modifier = Modifier.semantics {
+                    role = Role.Button
+                    contentDescription = toggleDescription
+                }
             ) {
                 if (isRecording) {
                     CircularProgressIndicator(

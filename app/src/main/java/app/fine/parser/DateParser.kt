@@ -143,7 +143,7 @@ object DateParser {
         if (day !in 1..31) return null
 
         var candidate = referenceDate
-        repeat(14) {
+        repeat(24) {
             val length = candidate.lengthOfMonth()
             if (day <= length) {
                 if (candidate.month == referenceDate.month && candidate.year == referenceDate.year) {
@@ -176,6 +176,6 @@ object DateParser {
             withoutDiacritics
         }
 
-        return trimmed
+        return trimmed.replace("'", "")
     }
 }

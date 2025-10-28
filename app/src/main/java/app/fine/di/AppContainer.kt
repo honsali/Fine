@@ -13,6 +13,7 @@ class AppContainer(context: Context) {
         context,
         ExpenseDatabase::class.java,
         "expenses.db"
+        // Personal project: destructive migrations are acceptable. Export data before upgrading.
     ).fallbackToDestructiveMigration().build()
 
     val expenseRepository: ExpenseRepository =

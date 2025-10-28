@@ -1,0 +1,117 @@
+##Critical Issues
+1. Speech Recognition Lifecycle Management
+kotlin// In AddRoute.kt - potential memory leak
+val speechRecognizer = remember(recognitionAvailable) {
+    if (recognitionAvailable) SpeechRecognizer.createSpeechRecognizer(context) else null
+}
+The speechRecognizer is created in composition but the DisposableEffect cleanup happens too late. If the composable recomposes frequently, you could create multiple recognizers.
+Recommendation: Move to ViewModel or use rememberUpdatedState more carefully.
+
+2. Permission Handling Race Condition
+kotlinvar permissionRequested by remember { mutableStateOf(false) }
+This flag doesn't survive configuration changes. If user rotates device during permission flow, the flag resets and could trigger duplicate permission requests.
+Fix: Move permission state to ViewModel.
+
+3. Date Parser Edge Cases
+In DateParser.parseDayOfMonth():
+kotlinrepeat(14) {
+    val length = candidate.lengthOfMonth()
+    if (day <= length) {
+        if (candidate.month == referenceDate.month && candidate.year == referenceDate.year) {
+This only looks back 14 months. What if someone says "le 15" on March 1st but last entered expense was February 14th? Edge case but could confuse users.
+
+4. Amount Parser Ambiguity
+kotlintrimmed.contains(',') && trimmed.contains('.') -> {
+    // Assume comma is decimal separator when mixed.
+    trimmed.replace(".", "").replace(',', '.')
+}
+This assumption breaks for European format 1.200,50 (one thousand two hundred) vs 1.200.50 (ambiguous). The parser would misinterpret this.
+Suggestion: Add validation or stricter rules for mixed separators.
+
+##Medium Priority Issues
+5. UI State Management
+kotlin// AddExpenseViewModel.kt
+fun cancel() {
+    _uiState.value = AddExpenseUiState()
+}
+Direct assignment instead of update {}. While this works, it's inconsistent with other methods. Prefer update everywhere for clarity.
+
+6. Missing Error Boundaries
+The app has no global error handling. If Room throws an unexpected exception, the app could crash. Consider:
+kotlinclass FineApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        Thread.setDefaultUncaughtExceptionHandler { _, throwable ->
+            // Log to file or show recovery UI
+        }
+    }
+}
+
+7. Accessibility Concerns
+
+No content descriptions for voice recording state
+No TalkBack announcements when moving between steps
+Mic button has no semantic role indicator
+
+Add:
+kotlinIcon(
+    imageVector = Icons.Filled.Mic,
+    contentDescription = stringResource(R.string.action_start_recording),
+    modifier = Modifier.semantics { role = Role.Button }
+)
+
+8. CSV Export Security
+kotlinprivate fun escapeCsv(value: String): String =
+    if (value.contains(';') || value.contains('"') || value.contains('\n')) {
+        "\"${value.replace("\"", "\"\"")}\""
+    } else {
+        value
+    }
+
+Good! But missing carriage return (\r) check. Some Excel versions are picky.
+
+
+##Minor Issues & Suggestions 
+
+9. Hardcoded Strings in Code
+kotlinval zone = ZoneId.of("Africa/Casablanca")
+Should be in gradle.properties or a config object for easier updates.
+
+10. No Data Validation on Insert
+kotlinoverride suspend fun addExpense(...): Result<Long> = runCatching {
+    withContext(ioDispatcher) {
+        val entity = ExpenseEntity(
+            description = description, // What if description is 10,000 chars?
+Add length limits:
+kotlinrequire(description.length <= 500) { "Description trop longue" }
+require(amountMinor > 0) { "Montant invalide" }
+
+11. Theme Could Be Enhanced
+Your color scheme is nice but:
+
+No elevation/shadow definitions
+Missing surfaceTint for Material 3
+Dark mode colors could have better contrast ratios (test with accessibility scanner)
+
+12. Missing Proguard Rules
+For release builds, add Room-specific rules:
+proguard-keep class app.fine.data.local.** { *; }
+-dontwarn androidx.room.**
+
+13. Room Migration Strategy
+kotlin.fallbackToDestructiveMigration().build()
+This is fine for personal use, but document in comments that upgrading will wipe data. Consider adding export reminder before updates.
+Performance Observations 
+
+14. LazyColumn Keys Missing
+kotlinitems(state.months) { month ->
+    MonthlyHistoryCard(...)
+}
+Should be:
+kotlinitems(state.months, key = { it.yearMonth.toString() }) { month ->
+This improves recomposition efficiency.
+15. Unnecessary Recompositions
+kotlinval dateFormatter = remember {
+    DateTimeFormatter.ofPattern("dd/MM/yyyy")
+}
+Good use of remember! But in HistoryScreen, both formatters could be hoisted to a singleton object since they never change.

@@ -50,6 +50,9 @@ class ExpenseRepositoryImpl(
         amountMinor: Long,
         source: String
     ): Result<Long> = runCatching {
+        require(description.isNotBlank()) { "Description manquante." }
+        require(description.length <= 500) { "Description trop longue." }
+        require(amountMinor > 0) { "Montant invalide." }
         withContext(ioDispatcher) {
             val entity = ExpenseEntity(
                 description = description,
@@ -96,7 +99,7 @@ class ExpenseRepositoryImpl(
     )
 
     private fun escapeCsv(value: String): String =
-        if (value.contains(';') || value.contains('"') || value.contains('\n')) {
+        if (value.contains(';') || value.contains('"') || value.contains('\n') || value.contains('\r')) {
             "\"${value.replace("\"", "\"\"")}\""
         } else {
             value

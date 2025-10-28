@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
@@ -31,26 +32,29 @@ fun AddRoute(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
+    val appContext = remember(context) { context.applicationContext }
     val recognitionAvailable = remember {
-        SpeechRecognizer.isRecognitionAvailable(context)
+        SpeechRecognizer.isRecognitionAvailable(appContext)
     }
 
-    val speechRecognizer = remember(recognitionAvailable) {
-        if (recognitionAvailable) SpeechRecognizer.createSpeechRecognizer(context) else null
+    val speechRecognizer = remember(recognitionAvailable, appContext) {
+        if (recognitionAvailable) SpeechRecognizer.createSpeechRecognizer(appContext) else null
     }
 
     val listeningState = remember { mutableStateOf(false) }
-    val hasPermissionState = remember {
-        mutableStateOf(
-            ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.RECORD_AUDIO
-            ) == PackageManager.PERMISSION_GRANTED
-        )
+    val initialPermissionGranted = remember {
+        ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.RECORD_AUDIO
+        ) == PackageManager.PERMISSION_GRANTED
     }
-    var permissionRequested by remember { mutableStateOf(false) }
+    val hasPermissionState = rememberSaveable {
+        mutableStateOf(initialPermissionGranted)
+    }
+    var permissionRequested by rememberSaveable { mutableStateOf(false) }
 
     val currentStep = rememberUpdatedState(uiState.step)
+    val currentContext = rememberUpdatedState(context)
 
     val recognizerIntent = remember {
         Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
@@ -81,50 +85,62 @@ fun AddRoute(
         }
     }
 
-    speechRecognizer?.setRecognitionListener(
-        remember {
-            object : RecognitionListener {
-                override fun onReadyForSpeech(params: Bundle?) {}
-                override fun onBeginningOfSpeech() {}
-                override fun onRmsChanged(rmsdB: Float) {}
-                override fun onBufferReceived(buffer: ByteArray?) {}
-                override fun onEndOfSpeech() {}
-                override fun onEvent(eventType: Int, params: Bundle?) {}
+    val recognitionListener = remember {
+        object : RecognitionListener {
+            override fun onReadyForSpeech(params: Bundle?) {}
+            override fun onBeginningOfSpeech() {}
+            override fun onRmsChanged(rmsdB: Float) {}
+            override fun onBufferReceived(buffer: ByteArray?) {}
+            override fun onEndOfSpeech() {}
+            override fun onEvent(eventType: Int, params: Bundle?) {}
 
-                override fun onPartialResults(partialResults: Bundle?) {
-                    val text = partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull()
-                    if (!text.isNullOrBlank()) {
-                        viewModel.onSpeechUpdate(currentStep.value, text)
-                    }
-                }
-
-                override fun onResults(results: Bundle?) {
-                    listeningState.value = false
-                    val text = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull()
-                    if (!text.isNullOrBlank()) {
-                        viewModel.onSpeechUpdate(currentStep.value, text)
-                    }
-                    viewModel.setRecordingActive(false)
-                }
-
-                override fun onError(error: Int) {
-                    listeningState.value = false
-                    viewModel.setRecordingActive(false)
-                    val message = when (error) {
-                        SpeechRecognizer.ERROR_NO_MATCH -> context.getString(R.string.add_error_no_match)
-                        SpeechRecognizer.ERROR_AUDIO -> context.getString(R.string.add_error_audio)
-                        SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> context.getString(R.string.add_permission_required)
-                        SpeechRecognizer.ERROR_CLIENT,
-                        SpeechRecognizer.ERROR_NETWORK,
-                        SpeechRecognizer.ERROR_RECOGNIZER_BUSY,
-                        SpeechRecognizer.ERROR_SERVER -> context.getString(R.string.add_error_speech_generic)
-                        else -> context.getString(R.string.add_error_speech_generic)
-                    }
-                    onEvent(AddScreenEvent.ShowMessage(message))
+            override fun onPartialResults(partialResults: Bundle?) {
+                val text = partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull()
+                if (!text.isNullOrBlank()) {
+                    viewModel.onSpeechUpdate(currentStep.value, text)
                 }
             }
+
+            override fun onResults(results: Bundle?) {
+                listeningState.value = false
+                val text = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull()
+                if (!text.isNullOrBlank()) {
+                    viewModel.onSpeechUpdate(currentStep.value, text)
+                }
+                viewModel.setRecordingActive(false)
+            }
+
+            override fun onError(error: Int) {
+                listeningState.value = false
+                viewModel.setRecordingActive(false)
+                val ctx = currentContext.value
+                val message = when (error) {
+                    SpeechRecognizer.ERROR_NO_MATCH -> ctx.getString(R.string.add_error_no_match)
+                    SpeechRecognizer.ERROR_AUDIO -> ctx.getString(R.string.add_error_audio)
+                    SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> ctx.getString(R.string.add_permission_required)
+                    SpeechRecognizer.ERROR_CLIENT,
+                    SpeechRecognizer.ERROR_NETWORK,
+                    SpeechRecognizer.ERROR_RECOGNIZER_BUSY,
+                    SpeechRecognizer.ERROR_SERVER -> ctx.getString(R.string.add_error_speech_generic)
+                    else -> ctx.getString(R.string.add_error_speech_generic)
+                }
+                onEvent(AddScreenEvent.ShowMessage(message))
+            }
         }
-    )
+    }
+
+    DisposableEffect(speechRecognizer, recognitionListener) {
+        val recognizer = speechRecognizer
+        if (recognizer != null) {
+            recognizer.setRecognitionListener(recognitionListener)
+        }
+        onDispose {
+            listeningState.value = false
+            recognizer?.stopListening()
+            recognizer?.cancel()
+            recognizer?.destroy()
+        }
+    }
 
     LaunchedEffect(uiState.step, uiState.isRecording, hasPermissionState.value, recognitionAvailable) {
         if (!recognitionAvailable || speechRecognizer == null) {
@@ -147,14 +163,6 @@ fun AddRoute(
                 speechRecognizer.startListening(recognizerIntent)
                 listeningState.value = true
             }
-        }
-    }
-
-    DisposableEffect(speechRecognizer) {
-        onDispose {
-            listeningState.value = false
-            speechRecognizer?.cancel()
-            speechRecognizer?.destroy()
         }
     }
 
