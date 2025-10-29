@@ -34,7 +34,6 @@ import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Whatshot
 import androidx.compose.material.icons.filled.Wifi
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -50,6 +49,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -296,41 +296,68 @@ private fun ActiveStep(
                 singleLine = true
             )
 
+            val outlinedButtonColors = ButtonDefaults.outlinedButtonColors(
+                containerColor = Color.Transparent,
+                contentColor = MaterialTheme.colorScheme.primary,
+                disabledContentColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                disabledContainerColor = Color.Transparent
+            )
+            val buttonTextStyle = MaterialTheme.typography.bodySmall
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 OutlinedButton(
                     onClick = onCancel,
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = MaterialTheme.colorScheme.primary
-                    ),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                    colors = outlinedButtonColors,
+                    border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.primary)
                 ) {
-                    Text(text = stringResource(R.string.action_cancel))
+                    Text(
+                        text = stringResource(R.string.action_cancel),
+                        style = buttonTextStyle
+                    )
                 }
 
                 if (state.step == CaptureStep.HowMuch) {
-                    Button(
+                    val isFinishEnabled = textValue.isNotBlank() && !state.isSaving
+                    OutlinedButton(
                         onClick = onFinish,
-                        enabled = textValue.isNotBlank() && !state.isSaving,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        enabled = isFinishEnabled,
+                        colors = outlinedButtonColors,
+                        border = BorderStroke(
+                            0.5.dp,
+                            if (isFinishEnabled) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.outline
+                            }
                         )
                     ) {
-                        Text(text = stringResource(R.string.action_finish))
+                        Text(
+                            text = stringResource(R.string.action_finish),
+                            style = buttonTextStyle
+                        )
                     }
                 } else {
-                    Button(
+                    val isContinueEnabled = textValue.isNotBlank()
+                    OutlinedButton(
                         onClick = onContinue,
-                        enabled = textValue.isNotBlank(),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        enabled = isContinueEnabled,
+                        colors = outlinedButtonColors,
+                        border = BorderStroke(
+                            0.5.dp,
+                            if (isContinueEnabled) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.outline
+                            }
                         )
                     ) {
-                        Text(text = stringResource(R.string.action_continue))
+                        Text(
+                            text = stringResource(R.string.action_continue),
+                            style = buttonTextStyle
+                        )
                     }
                 }
             }
