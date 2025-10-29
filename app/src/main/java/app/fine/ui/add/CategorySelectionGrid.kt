@@ -21,9 +21,9 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocalDining
 import androidx.compose.material.icons.filled.LocalGasStation
+import androidx.compose.material.icons.filled.LocalParking
 import androidx.compose.material.icons.filled.LocalPhone
 import androidx.compose.material.icons.filled.Paid
-import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Whatshot
 import androidx.compose.material.icons.filled.Wifi
@@ -131,22 +131,32 @@ private data class QuickCategoryDefinition(
     val accentColor: Color
 ) {
     companion object {
+        private val AccentOverrides = mapOf(
+            "nourriture" to FinePalette.PersianGreen,
+            "ee" to FinePalette.Saffron,
+            "fibre" to FinePalette.SandyBrown,
+            "gaz" to FinePalette.Charcoal
+        )
+
+        private fun accentFor(name: String): Color =
+            AccentOverrides[name.lowercase()] ?: FinePalette.BurntSienna
+
         val Definitions: List<QuickCategoryDefinition> = listOf(
-            QuickCategoryDefinition("Nourriture", "Nourriture", Icons.Filled.LocalDining, FinePalette.PersianGreen),
-            QuickCategoryDefinition("Carburant", "Carburant", Icons.Filled.LocalGasStation, FinePalette.BurntSienna),
-            QuickCategoryDefinition("Loyer", "Loyer", Icons.Filled.Home, FinePalette.BurntSienna),
-            QuickCategoryDefinition("SDK", "SDK", Icons.Filled.Favorite, FinePalette.BurntSienna),
-            QuickCategoryDefinition("NFK", "NFK", Icons.Filled.AccountBalance, FinePalette.BurntSienna),
-            QuickCategoryDefinition("Telephone", "Telephone", Icons.Filled.LocalPhone, FinePalette.BurntSienna),
-            QuickCategoryDefinition("Fibre", "Fibre", Icons.Filled.Wifi, FinePalette.SandyBrown),
-            QuickCategoryDefinition("Payage", "Payage", Icons.Filled.Paid, FinePalette.BurntSienna),
-            QuickCategoryDefinition("Gardiennage", "Gardiennage", Icons.Filled.Security, FinePalette.BurntSienna),
-            QuickCategoryDefinition("Scolarite", "Scolarité", Icons.Filled.School, FinePalette.BurntSienna),
-            QuickCategoryDefinition("Aide", "Aide", Icons.Filled.EmojiPeople, FinePalette.BurntSienna),
-            QuickCategoryDefinition("Voiture", "Voiture", Icons.Filled.DirectionsCar, FinePalette.BurntSienna),
-            QuickCategoryDefinition("EE", "EE", Icons.Filled.Bolt, FinePalette.Saffron),
-            QuickCategoryDefinition("Gaz", "Gaz", Icons.Filled.Whatshot, FinePalette.Charcoal),
-            QuickCategoryDefinition("Perso", "Perso", Icons.Filled.AttachMoney, FinePalette.BurntSienna)
+            QuickCategoryDefinition("Nourriture", "Nourriture", Icons.Filled.LocalDining, accentFor("Nourriture")),
+            QuickCategoryDefinition("Loyer", "Loyer", Icons.Filled.Home, accentFor("Loyer")),
+            QuickCategoryDefinition("Scolarité", "Scolarité", Icons.Filled.School, accentFor("Scolarité")),
+            QuickCategoryDefinition("Carburant", "Carburant", Icons.Filled.LocalGasStation, accentFor("Carburant")),
+            QuickCategoryDefinition("Payage", "Payage", Icons.Filled.Paid, accentFor("Payage")),
+            QuickCategoryDefinition("Parking", "Parking", Icons.Filled.LocalParking, accentFor("Parking")),
+            QuickCategoryDefinition("SDK", "SDK", Icons.Filled.Favorite, accentFor("SDK")),
+            QuickCategoryDefinition("NFK", "NFK", Icons.Filled.AccountBalance, accentFor("NFK")),
+            QuickCategoryDefinition("Aide", "Aide", Icons.Filled.EmojiPeople, accentFor("Aide")),
+            QuickCategoryDefinition("Telephone", "Telephone", Icons.Filled.LocalPhone, accentFor("Telephone")),
+            QuickCategoryDefinition("Fibre", "Fibre", Icons.Filled.Wifi, accentFor("Fibre")),
+            QuickCategoryDefinition("EE", "EE", Icons.Filled.Bolt, accentFor("EE")),
+            QuickCategoryDefinition("Gaz", "Gaz", Icons.Filled.Whatshot, accentFor("Gaz")),
+            QuickCategoryDefinition("Voiture", "Voiture", Icons.Filled.DirectionsCar, accentFor("Voiture")),
+            QuickCategoryDefinition("Poche", "Poche", Icons.Filled.AttachMoney, accentFor("Poche"))
         )
     }
 }
