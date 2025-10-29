@@ -52,11 +52,20 @@ fun ManageRoute(
             val formattedDate = fileNameFormatter.format(LocalDate.now())
             exportLauncher.launch("fine-expenses-$formattedDate.csv")
         },
+        onPurgeRequest = { confirmPurge = true },
         onConfirmPurge = {
             confirmPurge = false
             viewModel.purgeAll()
         },
-        onPurgeRequest = { confirmPurge = true },
-        onDismissDialog = { confirmPurge = false }
+        onDismissDialog = { confirmPurge = false },
+        onNewCategoryNameChange = viewModel::onNewCategoryNameChange,
+        onAddCategory = viewModel::createCategory,
+        onEditCategory = viewModel::startEditCategory,
+        onDeleteCategory = viewModel::requestDeleteCategory,
+        onEditCategoryNameChange = viewModel::onEditCategoryNameChange,
+        onConfirmEditCategory = viewModel::confirmEditCategory,
+        onDismissEditCategory = viewModel::dismissEditCategory,
+        onConfirmDeleteCategory = viewModel::confirmDeleteCategory,
+        onDismissDeleteCategory = viewModel::dismissDeleteCategory
     )
 }

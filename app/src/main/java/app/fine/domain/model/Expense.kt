@@ -9,5 +9,6 @@ data class Expense(
     val date: LocalDate,
     val amountMinor: Long,
     val createdAt: Instant,
-    val source: String
+    val source: String,
+    val category: Category
 )

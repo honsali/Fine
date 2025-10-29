@@ -186,7 +186,7 @@ fun AddRoute(
 
     AddScreen(
         state = uiState,
-        onStart = viewModel::startCapture,
+        onCategorySelected = viewModel::selectCategory,
         onCancel = viewModel::cancel,
         onRepeat = viewModel::repeatStep,
         onContinue = viewModel::onContinue,

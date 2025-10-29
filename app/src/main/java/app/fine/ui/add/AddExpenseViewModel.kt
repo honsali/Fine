@@ -3,6 +3,7 @@ package app.fine.ui.add
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.fine.data.ExpenseRepository
+import app.fine.domain.model.CategoryPresets
 import app.fine.parser.AmountParser
 import app.fine.parser.DateParser
 import java.time.ZoneId
@@ -10,6 +11,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -23,15 +25,59 @@ class AddExpenseViewModel(
     private val _events = MutableSharedFlow<AddExpenseEvent>()
     val events = _events.asSharedFlow()
 
-    fun startCapture() {
+    init {
+        ensurePresetCategories()
+        observeCategories()
+    }
+
+    private fun ensurePresetCategories() {
+        viewModelScope.launch {
+            CategoryPresets.ProtectedCategoryDisplayNames.forEach { name ->
+                repository.ensureCategory(name)
+            }
+        }
+    }
+
+    private fun observeCategories() {
+        val quickNames = CategoryPresets.QuickCategoryNames.map { it.lowercase() }
+        val orderMap = CategoryPresets.QuickCategoryNames.withIndex()
+            .associate { it.value.lowercase() to it.index }
+
+        viewModelScope.launch {
+            repository.observeCategories().collectLatest { categories ->
+                val quickCategories = categories
+                    .filter { quickNames.contains(it.name.lowercase()) }
+                    .sortedBy { orderMap[it.name.lowercase()] ?: Int.MAX_VALUE }
+                    .map { CategoryOption(id = it.id, name = it.name) }
+
+                _uiState.update { state ->
+                    val newState = state.copy(categories = quickCategories)
+                    if (newState.selectedCategoryId != null &&
+                        quickCategories.none { it.id == newState.selectedCategoryId }
+                    ) {
+                        newState.copy(selectedCategoryId = null)
+                    } else {
+                        newState
+                    }
+                }
+            }
+        }
+    }
+
+    fun selectCategory(categoryId: Long) {
+        val categories = _uiState.value.categories
+        if (categories.none { it.id == categoryId }) return
         _uiState.value = AddExpenseUiState(
             step = CaptureStep.What,
-            isRecording = true
+            isRecording = true,
+            categories = categories,
+            selectedCategoryId = categoryId
         )
     }
 
     fun cancel() {
-        _uiState.update { AddExpenseUiState() }
+        val categories = _uiState.value.categories
+        _uiState.value = AddExpenseUiState(categories = categories)
     }
 
     fun repeatStep() {
@@ -65,7 +111,7 @@ class AddExpenseViewModel(
         when (state.step) {
             CaptureStep.What -> {
                 if (state.whatText.isBlank()) {
-                    _uiState.update { it.copy(whatError = "Décris la dépense avant de continuer.") }
+                    _uiState.update { it.copy(whatError = "Decris la depense avant de continuer.") }
                 } else {
                     _uiState.update {
                         it.copy(
@@ -97,13 +143,21 @@ class AddExpenseViewModel(
 
     fun onFinish() {
         val state = _uiState.value
+        val categoryId = state.selectedCategoryId
+        if (categoryId == null) {
+            viewModelScope.launch {
+                _events.emit(AddExpenseEvent.ShowError("Choisis une categorie."))
+            }
+            return
+        }
+
         if (state.howMuchText.isBlank()) {
             _uiState.update { it.copy(howMuchError = "Indique le montant avant de terminer.") }
             return
         }
         val description = state.whatText.trim()
         if (description.isEmpty()) {
-            _uiState.update { it.copy(whatError = "Décris la dépense avant de terminer.") }
+            _uiState.update { it.copy(whatError = "Decris la depense avant de terminer.") }
             return
         }
 
@@ -136,13 +190,18 @@ class AddExpenseViewModel(
             val result = repository.addExpense(
                 description = description,
                 date = date,
-                amountMinor = amountMinor
+                amountMinor = amountMinor,
+                categoryId = categoryId
             )
             result
                 .onSuccess {
-                    _uiState.value = AddExpenseUiState()
+                    val categories = _uiState.value.categories
+                    _uiState.value = AddExpenseUiState(categories = categories)
                     _events.emit(
-                        AddExpenseEvent.ExpenseSaved(description = description, amountMinor = amountMinor)
+                        AddExpenseEvent.ExpenseSaved(
+                            description = description,
+                            amountMinor = amountMinor
+                        )
                     )
                 }
                 .onFailure { throwable ->

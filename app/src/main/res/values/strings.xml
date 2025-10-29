@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Fine</string>
 
@@ -6,7 +6,7 @@
     <string name="tab_history">Historique</string>
     <string name="tab_manage">Gestion</string>
 
-    <string name="title_add">Ajouter</string>
+        <string name="title_add">Ajouter depense</string>
     <string name="add_intro_title">Pret a enregistrer une depense ?</string>
     <string name="add_intro_description">Appuie sur Commencer et enregistre quoi, quand et combien.</string>
     <string name="action_start">Commencer</string>
@@ -41,11 +41,27 @@
     <string name="history_edit_description">Description</string>
     <string name="history_edit_date">Date</string>
     <string name="history_edit_amount">Montant</string>
+    <string name="history_edit_category">Categorie</string>
     <string name="history_edit_cancel">Annuler</string>
     <string name="history_edit_confirm">Valider</string>
+    <string name="history_edit_delete">Supprimer</string>
 
     <string name="manage_title">Gestion</string>
-    <string name="manage_export_description">Exporte toutes les depenses en CSV (date;description;montant).</string>
+    <string name="manage_categories_title">Categories des depenses</string>
+    <string name="manage_category_name_label">Nom de la categorie</string>
+    <string name="manage_category_add">Ajouter la categorie</string>
+    <string name="manage_category_empty">Aucune categorie definie pour le moment.</string>
+    <string name="manage_category_default_label">Categorie par defaut</string>
+    <string name="manage_category_edit">Modifier la categorie</string>
+    <string name="manage_category_delete">Supprimer la categorie</string>
+    <string name="manage_category_edit_title">Renommer la categorie</string>
+    <string name="manage_category_edit_confirm">Valider</string>
+    <string name="manage_category_edit_cancel">Annuler</string>
+    <string name="manage_category_delete_title">Supprimer la categorie ?</string>
+    <string name="manage_category_delete_message">Supprimer la categorie %1$s ? Les depenses seront reassignees a Divers.</string>
+    <string name="manage_category_delete_confirm">Supprimer</string>
+    <string name="manage_category_delete_cancel">Annuler</string>
+    <string name="manage_export_description">Exporte toutes les depenses en CSV (date;description;montant;categorie).</string>
     <string name="manage_export_button">Exporter en CSV</string>
     <string name="manage_export_in_progress">Export en cours...</string>
     <string name="manage_purge_description">Supprime tout l\'historique local.</string>
