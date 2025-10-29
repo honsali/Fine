@@ -1,6 +1,7 @@
 package app.fine.ui.add
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,6 +36,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -83,13 +85,18 @@ private fun CategoryTile(
             .fillMaxWidth()
             .aspectRatio(1f),
         colors = CardDefaults.cardColors(
-            containerColor = if (enabled) {
-                MaterialTheme.colorScheme.secondary.copy(alpha = 0.25f)
+            containerColor = Color.Transparent,
+            disabledContainerColor = Color.Transparent
+        ),
+        border = BorderStroke(
+            width = 0.5.dp,
+            color = if (enabled) {
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
             } else {
-                MaterialTheme.colorScheme.surfaceVariant
+                MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
             }
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
             modifier = Modifier
@@ -102,11 +109,11 @@ private fun CategoryTile(
                 imageVector = icon,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(40.dp)
+                modifier = Modifier.size(32.dp)
             )
             Text(
                 text = label,
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 12.dp)
