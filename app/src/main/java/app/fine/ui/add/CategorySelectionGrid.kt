@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import app.fine.ui.theme.FinePalette
 
 @Composable
 internal fun CategorySelectionGrid(
@@ -62,6 +63,7 @@ internal fun CategorySelectionGrid(
             CategoryTile(
                 label = definition.displayName,
                 icon = definition.icon,
+                color = definition.accentColor,
                 enabled = option != null,
                 onClick = {
                     option?.let { onCategorySelected(it.id) }
@@ -75,9 +77,12 @@ internal fun CategorySelectionGrid(
 private fun CategoryTile(
     label: String,
     icon: ImageVector,
+    color: Color,
     enabled: Boolean,
     onClick: () -> Unit
 ) {
+    val displayColor = if (enabled) color else color.copy(alpha = 0.3f)
+
     Card(
         onClick = onClick,
         enabled = enabled,
@@ -90,11 +95,7 @@ private fun CategoryTile(
         ),
         border = BorderStroke(
             width = 0.5.dp,
-            color = if (enabled) {
-                MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
-            } else {
-                MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-            }
+            color = displayColor
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
@@ -108,13 +109,14 @@ private fun CategoryTile(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
+                tint = displayColor,
                 modifier = Modifier.size(32.dp)
             )
             Text(
                 text = label,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
+                color = displayColor,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 12.dp)
             )
@@ -125,25 +127,26 @@ private fun CategoryTile(
 private data class QuickCategoryDefinition(
     val name: String,
     val displayName: String,
-    val icon: ImageVector
+    val icon: ImageVector,
+    val accentColor: Color
 ) {
     companion object {
         val Definitions: List<QuickCategoryDefinition> = listOf(
-            QuickCategoryDefinition("Nourriture", "Nourriture", Icons.Filled.LocalDining),
-            QuickCategoryDefinition("Carburant", "Carburant", Icons.Filled.LocalGasStation),
-            QuickCategoryDefinition("Loyer", "Loyer", Icons.Filled.Home),
-            QuickCategoryDefinition("SDK", "SDK", Icons.Filled.Favorite),
-            QuickCategoryDefinition("NFK", "NFK", Icons.Filled.AccountBalance),
-            QuickCategoryDefinition("Telephone", "Telephone", Icons.Filled.LocalPhone),
-            QuickCategoryDefinition("Fibre", "Fibre", Icons.Filled.Wifi),
-            QuickCategoryDefinition("Payage", "Payage", Icons.Filled.Paid),
-            QuickCategoryDefinition("Gardiennage", "Gardiennage", Icons.Filled.Security),
-            QuickCategoryDefinition("Scolarite", "Scolarité", Icons.Filled.School),
-            QuickCategoryDefinition("Aide", "Aide", Icons.Filled.EmojiPeople),
-            QuickCategoryDefinition("Voiture", "Voiture", Icons.Filled.DirectionsCar),
-            QuickCategoryDefinition("EE", "EE", Icons.Filled.Bolt),
-            QuickCategoryDefinition("Gaz", "Gaz", Icons.Filled.Whatshot),
-            QuickCategoryDefinition("Perso", "Perso", Icons.Filled.AttachMoney)
+            QuickCategoryDefinition("Nourriture", "Nourriture", Icons.Filled.LocalDining, FinePalette.PersianGreen),
+            QuickCategoryDefinition("Carburant", "Carburant", Icons.Filled.LocalGasStation, FinePalette.BurntSienna),
+            QuickCategoryDefinition("Loyer", "Loyer", Icons.Filled.Home, FinePalette.BurntSienna),
+            QuickCategoryDefinition("SDK", "SDK", Icons.Filled.Favorite, FinePalette.BurntSienna),
+            QuickCategoryDefinition("NFK", "NFK", Icons.Filled.AccountBalance, FinePalette.BurntSienna),
+            QuickCategoryDefinition("Telephone", "Telephone", Icons.Filled.LocalPhone, FinePalette.BurntSienna),
+            QuickCategoryDefinition("Fibre", "Fibre", Icons.Filled.Wifi, FinePalette.SandyBrown),
+            QuickCategoryDefinition("Payage", "Payage", Icons.Filled.Paid, FinePalette.BurntSienna),
+            QuickCategoryDefinition("Gardiennage", "Gardiennage", Icons.Filled.Security, FinePalette.BurntSienna),
+            QuickCategoryDefinition("Scolarite", "Scolarité", Icons.Filled.School, FinePalette.BurntSienna),
+            QuickCategoryDefinition("Aide", "Aide", Icons.Filled.EmojiPeople, FinePalette.BurntSienna),
+            QuickCategoryDefinition("Voiture", "Voiture", Icons.Filled.DirectionsCar, FinePalette.BurntSienna),
+            QuickCategoryDefinition("EE", "EE", Icons.Filled.Bolt, FinePalette.Saffron),
+            QuickCategoryDefinition("Gaz", "Gaz", Icons.Filled.Whatshot, FinePalette.Charcoal),
+            QuickCategoryDefinition("Perso", "Perso", Icons.Filled.AttachMoney, FinePalette.BurntSienna)
         )
     }
 }
