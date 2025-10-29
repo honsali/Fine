@@ -8,52 +8,52 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-private val FieryPrimary = Color(0xFFC1121F)
-private val FieryBurgundy = Color(0xFF780000)
-private val FierySand = Color(0xFFFDF0D5)
-private val OceanDeep = Color(0xFF003049)
-private val OceanSoft = Color(0xFF669BBC)
+private val BurntSienna = Color(0xFFE76F51)
+private val Charcoal = Color(0xFF264653)
+private val PersianGreen = Color(0xFF2A9D8F)
+private val Saffron = Color(0xFFE9C46A)
+private val SandyBrown = Color(0xFFF4A261)
 
 private val LightColors = lightColorScheme(
-    primary = FieryPrimary,
+    primary = BurntSienna,
     onPrimary = Color.White,
-    primaryContainer = FieryBurgundy,
-    onPrimaryContainer = FierySand,
-    secondary = OceanSoft,
+    primaryContainer = SandyBrown,
+    onPrimaryContainer = Charcoal,
+    secondary = PersianGreen,
     onSecondary = Color.White,
-    secondaryContainer = OceanSoft,
-    onSecondaryContainer = OceanDeep,
-    tertiary = OceanDeep,
+    secondaryContainer = Saffron,
+    onSecondaryContainer = Charcoal,
+    tertiary = Charcoal,
     onTertiary = Color.White,
     background = Color.White,
-    onBackground = OceanDeep,
+    onBackground = Charcoal,
     surface = Color.White,
-    onSurface = OceanDeep,
-    surfaceVariant = FierySand,
-    onSurfaceVariant = OceanDeep,
-    outline = OceanSoft,
+    onSurface = Charcoal,
+    surfaceVariant = Saffron,
+    onSurfaceVariant = Charcoal,
+    outline = PersianGreen,
     error = Color(0xFFBA1B1B),
     onError = Color.White
 )
 
 private val DarkColors = darkColorScheme(
-    primary = OceanSoft,
-    onPrimary = OceanDeep,
-    primaryContainer = OceanDeep,
-    onPrimaryContainer = FierySand,
-    secondary = FieryPrimary,
-    onSecondary = FierySand,
-    secondaryContainer = FieryBurgundy,
-    onSecondaryContainer = FierySand,
-    tertiary = FieryPrimary,
-    onTertiary = FierySand,
-    background = OceanDeep,
+    primary = PersianGreen,
+    onPrimary = Charcoal,
+    primaryContainer = Charcoal,
+    onPrimaryContainer = Saffron,
+    secondary = BurntSienna,
+    onSecondary = Saffron,
+    secondaryContainer = BurntSienna,
+    onSecondaryContainer = Color.White,
+    tertiary = BurntSienna,
+    onTertiary = Saffron,
+    background = Charcoal,
     onBackground = Color.White,
-    surface = OceanDeep,
-    onSurface = FierySand,
-    surfaceVariant = FieryBurgundy,
-    onSurfaceVariant = FierySand,
-    outline = OceanSoft,
+    surface = Charcoal,
+    onSurface = Saffron,
+    surfaceVariant = Charcoal,
+    onSurfaceVariant = Saffron,
+    outline = PersianGreen,
     error = Color(0xFFFFB4AB),
     onError = Color(0xFF690005)
 )
